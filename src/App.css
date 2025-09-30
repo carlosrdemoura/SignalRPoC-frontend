@@ -1,0 +1,66 @@
+body {
+    background-color: #282c34;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #61dafb;
+    border-bottom: 2px solid #61dafb;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.chat-window {
+    background-color: #20232a;
+    border: 1px solid #61dafb;
+    border-radius: 8px;
+    height: 400px;
+    overflow-y: auto;
+    padding: 15px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* This is now a div */
+.message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+/* New rule for the paragraph inside the message */
+.message p {
+    margin: 5px 0 0; /* Add a small top margin, remove bottom margin */
+}
+
+.message.server {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-start;
+}
+
+.message.system {
+    background-color: #4a4f58;
+    color: #ccc;
+    align-self: center;
+    font-style: italic;
+}
