@@ -3,37 +3,31 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import './App.css';
 
 const App = () => {
+    const [connection, setConnection] = useState(null);
     const [messages, setMessages] = useState([]);
     const chatWindowRef = useRef(null);
 
     const HUB_URL = "https://signalr-poc-8454cb2aaafa.herokuapp.com/RobbCoreNotificationHub";
 
     useEffect(() => {
-        const connection = new HubConnectionBuilder()
+        const newConnection = new HubConnectionBuilder()
             .withUrl(HUB_URL)
             .withAutomaticReconnect()
             .configureLogging(LogLevel.Information)
             .build();
+        
+        setConnection(newConnection);
 
-        // Correctly handle 'title' and 'message' as separate parameters
-        connection.on("ReceiveMessage", (title, message) => {
-            // Create a new message object and add it to the state
+        newConnection.on("ReceiveMessage", (title, message) => {
             setMessages(prevMessages => [...prevMessages, { title, message }]);
         });
 
-        const startConnection = async () => {
-            try {
-                await connection.start();
-                console.log("SignalR Connected.");
-            } catch (err) {
-                console.error("SignalR Connection Error: ", err);
-            }
-        };
-
-        startConnection();
+        newConnection.start()
+            .then(() => console.log("SignalR Connected."))
+            .catch(err => console.error("SignalR Connection Error: ", err));
 
         return () => {
-            connection.stop().then(() => console.log("SignalR Disconnected."));
+            newConnection.stop().then(() => console.log("SignalR Disconnected."));
         };
     }, []);
 
@@ -43,9 +37,33 @@ const App = () => {
         }
     }, [messages]);
 
+    const sendPageViewEvent = async () => {
+
+        const currentPath = window.location.pathname;
+
+        if (connection) {
+            try {
+                await connection.invoke("PageViewed", currentPath);
+                console.log(`PageViewed event sent for path: ${currentPath}`);
+            } catch (err) {
+                console.error("Error invoking PageViewed: ", err);
+            }
+        } else {
+            alert("Connection not established.");
+        }
+    };
+
     return (
         <div className="app-container">
             <h1>SignalR Chat PoC</h1>
+
+            <button 
+                className="action-button" 
+                onClick={sendPageViewEvent} 
+                disabled={!connection}>
+                Send "Page Viewed" Event
+            </button>
+
             <div className="chat-window" ref={chatWindowRef}>
                 {messages.length === 0 && (
                     <p className="message system">Waiting for messages from the server...</p>
