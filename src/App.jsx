@@ -6,12 +6,15 @@ const App = () => {
     const [connection, setConnection] = useState(null);
     const [messages, setMessages] = useState([]);
     const chatWindowRef = useRef(null);
+    const [path, setPath] = useState("");
 
-    const HUB_URL = "https://signalr-poc-8454cb2aaafa.herokuapp.com/RobbCoreNotificationHub";
+    const HUB_URL = "https://nw-staging-techboard.distrito.me/RobbCoreNotificationHub";
+
+    const token = "";
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl(HUB_URL)
+            .withUrl(HUB_URL, { withCredentials: false, accessTokenFactory: () => token })
             .withAutomaticReconnect()
             .configureLogging(LogLevel.Information)
             .build();
@@ -38,13 +41,10 @@ const App = () => {
     }, [messages]);
 
     const sendPageViewEvent = async () => {
-
-        const currentPath = window.location.pathname;
-
         if (connection) {
             try {
-                await connection.invoke("PageViewed", currentPath);
-                console.log(`PageViewed event sent for path: ${currentPath}`);
+                await connection.invoke("PageViewed", path);
+                console.log(`PageViewed event sent for path: ${path}`);
             } catch (err) {
                 console.error("Error invoking PageViewed: ", err);
             }
@@ -57,12 +57,21 @@ const App = () => {
         <div className="app-container">
             <h1>SignalR Chat PoC</h1>
 
-            <button 
-                className="action-button" 
-                onClick={sendPageViewEvent} 
-                disabled={!connection}>
-                Send "Page Viewed" Event
-            </button>
+            <div className="input-container">
+                <input
+                    type="text"
+                    className="path-input"
+                    value={path}
+                    onChange={(e) => setPath(e.target.value)}
+                    placeholder="Enter path to send"
+                />
+                <button 
+                    className="action-button" 
+                    onClick={sendPageViewEvent} 
+                    disabled={!connection}>
+                    Send "Page Viewed" Event
+                </button>
+            </div>
 
             <div className="chat-window" ref={chatWindowRef}>
                 {messages.length === 0 && (
