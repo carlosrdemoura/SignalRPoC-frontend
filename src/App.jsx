@@ -8,7 +8,7 @@ const App = () => {
     const chatWindowRef = useRef(null);
     const [path, setPath] = useState("");
 
-    const HUB_URL = "https://nw-staging-techboard.distrito.me/RobbCoreNotificationHub";
+    const HUB_URL = "https://nw-staging-techboard.distrito.me/SignalRHubs/RobbCore";
 
     const token = "";
 
